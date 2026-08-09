@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Free AI API Directory</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d29;
+    --card-hover: #21253550;
+    --text: #e8e9ed;
+    --muted: #9199a8;
+    --accent: #7c9cff;
+    --green: #3ecf8e;
+    --red: #ff6b6b;
+    --yellow: #ffcc66;
+    --border: #2a2e3d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    margin: 0;
+    padding: 0 0 80px 0;
+    line-height: 1.5;
+  }
+  header {
+    background: linear-gradient(135deg, #1a1d29, #23283b);
+    padding: 40px 24px 28px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  header h1 { margin: 0 0 6px; font-size: 28px; }
+  header p { margin: 0; color: var(--muted); font-size: 14px; }
+  .search-box {
+    max-width: 900px;
+    margin: 20px auto 0;
+    padding: 0 24px;
+  }
+  #search {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: #10131c;
+    color: var(--text);
+    font-size: 15px;
+    outline: none;
+  }
+  #search:focus { border-color: var(--accent); }
+  .container { max-width: 1000px; margin: 0 auto; padding: 24px; }
+  .toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 30px;
+  }
+  .toc a {
+    background: var(--card);
+    color: var(--accent);
+    padding: 8px 14px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 13px;
+    border: 1px solid var(--border);
+    transition: all 0.15s;
+  }
+  .toc a:hover { background: var(--accent); color: #0f1117; }
+
+  .section {
+    margin-bottom: 14px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--card);
+  }
+  .section-header {
+    padding: 18px 22px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    background: #1d2130;
+  }
+  .section-header:hover { background: #232840; }
+  .section-header h2 { margin: 0; font-size: 17px; }
+  .section-header .note { color: var(--muted); font-size: 12px; font-weight: normal; margin-top: 4px; }
+  .chevron { transition: transform 0.2s; color: var(--muted); font-size: 18px; }
+  .section.open .chevron { transform: rotate(90deg); }
+  .section-body {
+    display: none;
+    padding: 8px 18px 18px;
+  }
+  .section.open .section-body { display: block; }
+
+  .subhead {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--accent);
+    margin: 18px 0 10px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+  }
+  .subhead:first-child { border-top: none; padding-top: 0; }
+
+  .card {
+    background: #12151f;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .card-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .card-title {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
+  }
+  .badges { display: flex; gap: 6px; flex-wrap: wrap; }
+  .badge {
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .badge.no-card { background: rgba(62,207,142,0.15); color: var(--green); }
+  .badge.card-req { background: rgba(255,107,107,0.15); color: var(--red); }
+  .badge.temp-yes { background: rgba(62,207,142,0.15); color: var(--green); }
+  .badge.temp-partial { background: rgba(255,204,102,0.15); color: var(--yellow); }
+  .badge.temp-no { background: rgba(255,107,107,0.15); color: var(--red); }
+
+  .card-row { font-size: 13px; color: var(--muted); margin: 3px 0; }
+  .card-row b { color: #c7cbd6; font-weight: 600; }
+  .card-row code {
+    background: #0b0d13;
+    padding: 1px 6px;
+    border-radius: 5px;
+    font-size: 12px;
+    color: #a8c6ff;
+  }
+  .card a.link-btn {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--accent);
+    text-decoration: none;
+    border: 1px solid var(--accent);
+    padding: 4px 12px;
+    border-radius: 8px;
+  }
+  .card a.link-btn:hover { background: var(--accent); color: #0f1117; }
+
+  .note-box {
+    background: rgba(255,204,102,0.08);
+    border: 1px solid rgba(255,204,102,0.3);
+    color: #ffdd99;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+  .quickstart-list { padding-left: 0; list-style: none; }
+  .quickstart-list li {
+    background: #12151f;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  .quickstart-list b { color: var(--accent); }
+  .quickstart-list code { color: #a8c6ff; background: #0b0d13; padding: 2px 6px; border-radius: 5px; }
+
+  .misconception-card {
+    border-left: 3px solid var(--red);
+  }
+  .misconception-card .card-row.workaround { color: var(--green); }
+
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 40px;
+    padding: 0 24px;
+  }
+  footer a { color: var(--accent); }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🔑 Free AI API Directory</h1>
+  <p>Zero billing required · Last updated August 2026 · Sources: freellm.net, awesome-freellm-apis, OuterSpacee/free-ai-apis, zukixa/cool-ai-stuff</p>
+  <div class="search-box">
+    <input id="search" type="text" placeholder="Search a provider, capability, or keyword (e.g. 'image', 'no signup', 'Gemini')...">
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="toc">
+    <a href="#s1">LLM / Chat</a>
+    <a href="#s2">Image Gen</a>
+    <a href="#s3">Video Gen</a>
+    <a href="#s4">TTS / STT</a>
+    <a href="#s5">Music / Audio</a>
+    <a href="#s6">Search / Scraping</a>
+    <a href="#s7">Code Gen</a>
+    <a href="#s8">Embeddings</a>
+    <a href="#s9">Vision / OCR</a>
+    <a href="#s10">Moderation</a>
+    <a href="#s11">Translation</a>
+    <a href="#s12">GPU Compute</a>
+    <a href="#s13">Proxies / Aggregators</a>
+    <a href="#s14">Temp-Mail Filter</a>
+    <a href="#s15">NOT Actually Free</a>
+    <a href="#quickstart">Quick Start</a>
+  </div>
+
+  <div class="note-box">
+    💡 <b>Badge legend:</b> Green "No Card" = works with zero payment info. Green "Temp-Mail OK" = works with throwaway email. Yellow "Partial" = email works but may trigger extra checks. Red = needs real identity (OAuth/phone).
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="section" id="s1">
+    <div class="section-header" onclick="toggle(this)">
+      <div><h2>1. Large Language Models (LLM) & Chat</h2><div class="note">30 providers · zero-auth to phone-verified</div></div>
+      <span class="chevron">▸</span>
+    </div>
+    <div class="section-body">
+
+      <div class="subhead">Zero-Auth — No Account At All</div>
+      <div class="card" data-search="puter.js chat gpt-4o claude gemini wrapper">
+        <div class="card-title-row"><span class="card-title">Puter.js</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div>
+        <div class="card-row"><b>Does:</b> Chat via GPT-4o, Claude, Gemini wrapper</div>
+        <div class="card-row"><b>Limits:</b> Unlimited, Puter covers the cost</div>
+        <div class="card-row"><b>Use:</b> <code>puter.ai.chat()</code> JS SDK, no base URL needed</div>
+        <a class="link-btn" href="https://developer.puter.com" target="_blank">Get Started →</a>
+      </div>
+      <div class="card" data-search="llm7.io chat code image pdf audio video vision">
+        <div class="card-title-row"><span class="card-title">LLM7.io</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div>
+        <div class="card-row"><b>Does:</b> Chat, code, image, pdf, audio, video, vision</div>
+        <div class="card-row"><b>Limits:</b> 30 RPM (120 with free token), 1M context</div>
+        <div class="card-row"><b>Base URL:</b> <code>api.llm7.io/v1</code></div>
+        <a class="link-btn" href="https://llm7.io" target="_blank">Get Started →</a>
+      </div>
+
+      <div class="subhead">Simple Email Registration Only</div>
+      <div class="card" data-search="google gemini ai studio text vision pdf audio video reasoning">
+        <div class="card-title-row"><span class="card-title">Google Gemini (AI Studio)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-no">Google Account</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, vision, PDF, audio, video, reasoning</div>
+        <div class="card-row"><b>Limits:</b> 15-30 RPM, 1,500 RPD, 1M context, resets daily</div>
+        <div class="card-row"><b>Base URL:</b> <code>generativelanguage.googleapis.com/v1beta</code></div>
+        <a class="link-btn" href="https://aistudio.google.com/apikey" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="groq text image reasoning fast inference">
+        <div class="card-title-row"><span class="card-title">Groq</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-no">OAuth</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, image, reasoning — ultra-fast inference</div>
+        <div class="card-row"><b>Limits:</b> 30 RPM, 14,400 RPD, 262K context, resets daily</div>
+        <div class="card-row"><b>Base URL:</b> <code>api.groq.com/openai/v1</code></div>
+        <a class="link-btn" href="https://console.groq.com/keys" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="cloudflare workers ai text code image reasoning video">
+        <div class="card-title-row"><span class="card-title">Cloudflare Workers AI</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-partial">Partial</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, code, image, reasoning, video</div>
+        <div class="card-row"><b>Limits:</b> 10,000 Neurons/day, resets midnight UTC</div>
+        <div class="card-row"><b>Base URL:</b> <code>api.cloudflare.com/client/v4/accounts/{id}/ai/run</code></div>
+        <a class="link-btn" href="https://dash.cloudflare.com" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="github models text image pdf reasoning phi mistral ai21">
+        <div class="card-title-row"><span class="card-title">GitHub Models</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-no">GitHub Account</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, image, pdf, reasoning</div>
+        <div class="card-row"><b>Limits:</b> Rate limited by GitHub account tier, 1M context</div>
+        <div class="card-row"><b>Base URL:</b> <code>models.github.ai/inference</code></div>
+        <a class="link-btn" href="https://github.com/marketplace/models" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="mistral la plateforme text code image codestral">
+        <div class="card-title-row"><span class="card-title">Mistral AI (La Plateforme)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, code, image, includes Codestral</div>
+        <div class="card-row"><b>Limits:</b> Experiment tier — ~1B tokens/month cap, rate-limited</div>
+        <div class="card-row"><b>Base URL:</b> <code>api.mistral.ai/v1</code></div>
+        <a class="link-btn" href="https://console.mistral.ai/api-keys" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="cohere text image command a r">
+        <div class="card-title-row"><span class="card-title">Cohere</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, image — Command A+/R+</div>
+        <div class="card-row"><b>Limits:</b> 20 RPM, 436K context, continuous (Trial key)</div>
+        <div class="card-row"><b>Base URL:</b> <code>api.cohere.com/v2</code></div>
+        <a class="link-btn" href="https://dashboard.cohere.com/api-keys" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="kilo code text code image audio video reasoning">
+        <div class="card-title-row"><span class="card-title">Kilo Code</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, code, image, audio, video, reasoning</div>
+        <div class="card-row"><b>Limits:</b> ~200 req/hr, 1M context</div>
+        <div class="card-row"><b>Base URL:</b> <code>api.kilo.ai/api/gateway</code></div>
+        <a class="link-btn" href="https://kilocode.ai" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="cerebras text image reasoning fastest inference">
+        <div class="card-title-row"><span class="card-title">Cerebras</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, image, reasoning — fastest inference available</div>
+        <div class="card-row"><b>Limits:</b> 5-30 RPM, 30K TPM, 1M TPD, 131K context</div>
+        <div class="card-row"><b>Base URL:</b> <code>api.cerebras.ai/v1</code></div>
+        <a class="link-btn" href="https://cloud.cerebras.ai" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="hugging face text code shared inference">
+        <div class="card-title-row"><span class="card-title">Hugging Face</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, code, shared inference across 500K+ models</div>
+        <div class="card-row"><b>Limits:</b> Credit-metered free monthly quota, 131K context</div>
+        <div class="card-row"><b>Base URL:</b> <code>router.huggingface.co/v1</code></div>
+        <a class="link-btn" href="https://huggingface.co/settings/tokens" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="z ai zhipu glm text image reasoning video">
+        <div class="card-title-row"><span class="card-title">Z AI (Zhipu AI)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, image, reasoning, video (GLM models)</div>
+        <div class="card-row"><b>Limits:</b> 1 concurrent request free, 200K context</div>
+        <div class="card-row"><b>Base URL:</b> <code>open.bigmodel.cn/api/paas/v4</code></div>
+        <a class="link-btn" href="https://open.bigmodel.cn" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="modelscope alibaba text audio image reasoning video vision">
+        <div class="card-title-row"><span class="card-title">ModelScope (Alibaba)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, audio, image, reasoning, video, vision</div>
+        <div class="card-row"><b>Limits:</b> 2,000 RPD total, 1M context, resets daily</div>
+        <div class="card-row"><b>Base URL:</b> <code>api-inference.modelscope.cn/v1</code></div>
+        <a class="link-btn" href="https://modelscope.cn" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="ovhcloud ai endpoints text code audio image reasoning video">
+        <div class="card-title-row"><span class="card-title">OVHcloud AI Endpoints</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, code, audio, image, reasoning, video</div>
+        <div class="card-row"><b>Limits:</b> 2 RPM anonymous, more with account, 262K context</div>
+        <div class="card-row"><b>Base URL:</b> <code>oai.endpoints.kepler.ai.cloud.ovh.net/v1</code></div>
+        <a class="link-btn" href="https://endpoints.ai.cloud.ovh.net" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="ollama cloud text code image reasoning video">
+        <div class="card-title-row"><span class="card-title">Ollama Cloud</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, code, image, reasoning, video</div>
+        <div class="card-row"><b>Limits:</b> Session/weekly limits, 1M context</div>
+        <div class="card-row"><b>Base URL:</b> <code>api.ollama.com</code></div>
+        <a class="link-btn" href="https://ollama.com/cloud" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="opencode zen text audio reasoning vision">
+        <div class="card-title-row"><span class="card-title">OpenCode Zen</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, audio, reasoning, vision</div>
+        <div class="card-row"><b>Limits:</b> Free tier included, 1M context</div>
+        <div class="card-row"><b>Base URL:</b> <code>opencode.ai/zen/v1</code></div>
+        <a class="link-btn" href="https://opencode.ai" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="aion labs text">
+        <div class="card-title-row"><span class="card-title">Aion Labs</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text</div>
+        <div class="card-row"><b>Limits:</b> 15 RPM, 20K TPD, 128K context</div>
+        <div class="card-row"><b>Base URL:</b> <code>api.aionlabs.ai/v1</code></div>
+        <a class="link-btn" href="https://ai.aionlabs.ai" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="agnes ai text image video vision">
+        <div class="card-title-row"><span class="card-title">Agnes AI</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, image, video, vision</div>
+        <div class="card-row"><b>Limits:</b> 30 RPM, 256K context</div>
+        <div class="card-row"><b>Base URL:</b> <code>apihub.agnes-ai.com/v1</code></div>
+        <a class="link-btn" href="https://agnes-ai.com" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="alibaba cloud model studio qwen text code image">
+        <div class="card-title-row"><span class="card-title">Alibaba Cloud Model Studio (Qwen)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, code, image</div>
+        <div class="card-row"><b>Limits:</b> Tiered by region, 1M context</div>
+        <div class="card-row"><b>Base URL:</b> <code>dashscope-intl.aliyuncs.com/compatible-mode/v1</code></div>
+        <a class="link-btn" href="https://dashscope.console.aliyun.com" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="sambanova cloud text image reasoning">
+        <div class="card-title-row"><span class="card-title">SambaNova Cloud</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, image, reasoning</div>
+        <div class="card-row"><b>Limits:</b> 20 RPM, 20 RPD, 200K TPD, 128K context</div>
+        <div class="card-row"><b>Base URL:</b> <code>api.sambanova.ai/v1</code></div>
+        <a class="link-btn" href="https://cloud.sambanova.ai" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="siliconflow text ocr deepseek-ocr">
+        <div class="card-title-row"><span class="card-title">SiliconFlow</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, OCR (DeepSeek-OCR)</div>
+        <div class="card-row"><b>Limits:</b> 30 RPM, 60K TPM, 131K context</div>
+        <div class="card-row"><b>Base URL:</b> <code>api.siliconflow.cn/v1</code></div>
+        <a class="link-btn" href="https://siliconflow.cn" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="chutes.ai reasoning text">
+        <div class="card-title-row"><span class="card-title">Chutes.ai</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Reasoning, text</div>
+        <div class="card-row"><b>Limits:</b> Community-powered, no hard limit, 131K context</div>
+        <div class="card-row"><b>Base URL:</b> <code>api.chutes.ai/v1</code></div>
+        <a class="link-btn" href="https://chutes.ai" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="glhf.chat text">
+        <div class="card-title-row"><span class="card-title">Glhf.chat</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text</div>
+        <div class="card-row"><b>Limits:</b> Unlimited for free-tagged models, 131K context</div>
+        <div class="card-row"><b>Base URL:</b> <code>glhf.chat/api/openai/v1</code></div>
+        <a class="link-btn" href="https://glhf.chat" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="ai21 labs text jamba">
+        <div class="card-title-row"><span class="card-title">AI21 Labs</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text (Jamba models)</div>
+        <div class="card-row"><b>Limits:</b> 200 RPM, 10 RPS, 256K context</div>
+        <div class="card-row"><b>Base URL:</b> <code>api.ai21.com/studio/v1</code></div>
+        <a class="link-btn" href="https://studio.ai21.com" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="deepseek text reasoning v3 r1">
+        <div class="card-title-row"><span class="card-title">DeepSeek</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, reasoning (V3, R1)</div>
+        <div class="card-row"><b>Limits:</b> Dynamic free quota, 128K context</div>
+        <div class="card-row"><b>Base URL:</b> <code>api.deepseek.com/v1</code></div>
+        <a class="link-btn" href="https://platform.deepseek.com/api_keys" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="nscale text">
+        <div class="card-title-row"><span class="card-title">Nscale</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text</div>
+        <div class="card-row"><b>Limits:</b> Fair-use free tier, 128K context</div>
+        <div class="card-row"><b>Base URL:</b> <code>inference.api.nscale.com/v1</code></div>
+        <a class="link-btn" href="https://nscale.com" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="nebius ai studio text">
+        <div class="card-title-row"><span class="card-title">Nebius AI Studio</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text</div>
+        <div class="card-row"><b>Limits:</b> Tier-based free quota, 128K context</div>
+        <div class="card-row"><b>Base URL:</b> <code>api.studio.nebius.com/v1</code></div>
+        <a class="link-btn" href="https://studio.nebius.ai" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="xai grok text">
+        <div class="card-title-row"><span class="card-title">xAI (Grok)</span><div class="badges"><span class="badge no-card">No Card (Credits)</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text</div>
+        <div class="card-row"><b>Limits:</b> $25/month free credits, up to 2M context</div>
+        <div class="card-row"><b>Base URL:</b> <code>api.x.ai/v1</code></div>
+        <a class="link-btn" href="https://console.x.ai" target="_blank">Get Key →</a>
+      </div>
+
+      <div class="subhead">Phone Verification Required</div>
+      <div class="card" data-search="nvidia nim build text audio embedding image reasoning rerank video vision">
+        <div class="card-title-row"><span class="card-title">NVIDIA NIM (Build)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-no">Phone Verified</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, audio, embedding, image, reasoning, rerank, video, vision</div>
+        <div class="card-row"><b>Limits:</b> Up to 40 RPM, 1M context, 1,000 free calls on signup</div>
+        <div class="card-row"><b>Base URL:</b> <code>integrate.api.nvidia.com/v1</code></div>
+        <a class="link-btn" href="https://build.nvidia.com" target="_blank">Get Key →</a>
+      </div>
+
+      <div class="subhead">Renewable Credits (Not Permanent, But Recurring/Toppable at $0)</div>
+      <div class="card" data-search="openrouter aggregator 20 free models unified">
+        <div class="card-title-row"><span class="card-title">OpenRouter</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, audio, code, embeddings, image, reasoning, rerank, speech, video</div>
+        <div class="card-row"><b>Limits:</b> 20+ models tagged ":free" at $0; optional $10 topup unlocks 1,000 RPD across all models</div>
+        <div class="card-row"><b>Base URL:</b> <code>openrouter.ai/api/v1</code></div>
+        <a class="link-btn" href="https://openrouter.ai/keys" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="fireworks ai text image">
+        <div class="card-title-row"><span class="card-title">Fireworks AI</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, image</div>
+        <div class="card-row"><b>Limits:</b> $1 free credit, one-time</div>
+        <a class="link-btn" href="https://fireworks.ai" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="together ai text code image embeddings">
+        <div class="card-title-row"><span class="card-title">Together AI</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, code, image, embeddings</div>
+        <div class="card-row"><b>Limits:</b> $5 free credit, one-time</div>
+        <a class="link-btn" href="https://api.together.ai/settings/api-keys" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="deepinfra text image">
+        <div class="card-title-row"><span class="card-title">DeepInfra</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, image</div>
+        <div class="card-row"><b>Limits:</b> Free credits on signup, one-time</div>
+        <a class="link-btn" href="https://deepinfra.com" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="novita ai text image">
+        <div class="card-title-row"><span class="card-title">Novita AI</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, image</div>
+        <div class="card-row"><b>Limits:</b> $0.50 free credit, one-time</div>
+        <a class="link-btn" href="https://novita.ai" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="hyperbolic text image">
+        <div class="card-title-row"><span class="card-title">Hyperbolic</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text, image</div>
+        <div class="card-row"><b>Limits:</b> Free tier for open-source models</div>
+        <a class="link-btn" href="https://hyperbolic.xyz" target="_blank">Get Key →</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="section" id="s2">
+    <div class="section-header" onclick="toggle(this)">
+      <div><h2>2. Image Generation & Vision Editing</h2><div class="note">Flux, Stable Diffusion, Pollinations, and more</div></div>
+      <span class="chevron">▸</span>
+    </div>
+    <div class="section-body">
+      <div class="card" data-search="pollinations ai text-to-image unlimited">
+        <div class="card-title-row"><span class="card-title">Pollinations AI</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div>
+        <div class="card-row"><b>Does:</b> Text-to-image</div>
+        <div class="card-row"><b>Limits:</b> Unlimited, zero auth</div>
+        <div class="card-row"><b>Use:</b> <code>image.pollinations.ai/prompt/{TEXT}</code></div>
+        <a class="link-btn" href="https://pollinations.ai" target="_blank">Try Now →</a>
+      </div>
+      <div class="card" data-search="craiyon dall-e mini watermark">
+        <div class="card-title-row"><span class="card-title">Craiyon (DALL-E Mini)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div>
+        <div class="card-row"><b>Does:</b> Text-to-image</div>
+        <div class="card-row"><b>Limits:</b> Free with watermark, unlimited</div>
+        <a class="link-btn" href="https://www.craiyon.com" target="_blank">Try Now →</a>
+      </div>
+      <div class="card" data-search="puter.js image dall-e sd">
+        <div class="card-title-row"><span class="card-title">Puter.js</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div>
+        <div class="card-row"><b>Does:</b> Text-to-image (DALL-E/SD wrapper)</div>
+        <div class="card-row"><b>Limits:</b> Unlimited, no signup</div>
+        <a class="link-btn" href="https://developer.puter.com" target="_blank">Try Now →</a>
+      </div>
+      <div class="card" data-search="cloudflare workers ai sdxl flux">
+        <div class="card-title-row"><span class="card-title">Cloudflare Workers AI</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-partial">Partial</span></div></div>
+        <div class="card-row"><b>Does:</b> Text-to-image (SDXL, FLUX.1)</div>
+        <div class="card-row"><b>Limits:</b> Part of 10,000 Neurons/day, resets midnight UTC</div>
+        <a class="link-btn" href="https://developers.cloudflare.com/workers-ai/" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="stability ai stable diffusion 3.5 ultra core">
+        <div class="card-title-row"><span class="card-title">Stability AI (Platform)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Stable Diffusion 3.5, SD Ultra/Core</div>
+        <div class="card-row"><b>Limits:</b> 25 free credits/month, resets monthly</div>
+        <a class="link-btn" href="https://platform.stability.ai" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="replicate flux sdxl thousands models">
+        <div class="card-title-row"><span class="card-title">Replicate</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Flux, SDXL, thousands of image models</div>
+        <div class="card-row"><b>Limits:</b> $5 free credit, one-time</div>
+        <a class="link-btn" href="https://replicate.com" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="leonardo ai text-to-image editing">
+        <div class="card-title-row"><span class="card-title">Leonardo AI</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text-to-image, image editing</div>
+        <div class="card-row"><b>Limits:</b> 150 tokens/day free, resets daily</div>
+        <a class="link-btn" href="https://leonardo.ai" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="hugging face stable diffusion flux shared inference">
+        <div class="card-title-row"><span class="card-title">Hugging Face</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Stable Diffusion, FLUX shared inference</div>
+        <div class="card-row"><b>Limits:</b> Free shared Inference API, credit-metered monthly</div>
+        <a class="link-btn" href="https://huggingface.co" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="clipdrop stability editing upscaling background removal">
+        <div class="card-title-row"><span class="card-title">Clipdrop (by Stability)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Image editing, upscaling, background removal</div>
+        <div class="card-row"><b>Limits:</b> 100 API calls/day free, resets daily</div>
+        <a class="link-btn" href="https://clipdrop.co/apis" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="prodia sd 1.5 sdxl fine-tuned">
+        <div class="card-title-row"><span class="card-title">Prodia</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> SD 1.5, SDXL, fine-tuned models</div>
+        <div class="card-row"><b>Limits:</b> Free tier, rate-limited</div>
+        <a class="link-btn" href="https://prodia.com" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="segmind sdxl flux lora">
+        <div class="card-title-row"><span class="card-title">Segmind</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> SDXL, Flux, LoRA models</div>
+        <div class="card-row"><b>Limits:</b> Free credits on signup, one-time</div>
+        <a class="link-btn" href="https://www.segmind.com" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="together ai flux sdxl">
+        <div class="card-title-row"><span class="card-title">Together AI</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> FLUX, Stable Diffusion XL</div>
+        <div class="card-row"><b>Limits:</b> Included in $5 free credit, one-time</div>
+        <a class="link-btn" href="https://www.together.ai" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="nvidia nim sdxl image">
+        <div class="card-title-row"><span class="card-title">NVIDIA NIM</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-no">Phone Verified</span></div></div>
+        <div class="card-row"><b>Does:</b> SDXL and other image models</div>
+        <div class="card-row"><b>Limits:</b> Included in 1,000 free calls, one-time</div>
+        <a class="link-btn" href="https://build.nvidia.com" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="ideogram text-in-image specialist">
+        <div class="card-title-row"><span class="card-title">Ideogram</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Text-in-image specialist</div>
+        <div class="card-row"><b>Limits:</b> Free daily credits, resets daily</div>
+        <a class="link-btn" href="https://ideogram.ai" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="magic hour ai image video editing">
+        <div class="card-title-row"><span class="card-title">Magic Hour</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> AI image + video editing</div>
+        <div class="card-row"><b>Limits:</b> 400 free credits, no watermark, no expiry (one-time)</div>
+        <a class="link-btn" href="https://magichour.ai" target="_blank">Get Key →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="section" id="s3">
+    <div class="section-header" onclick="toggle(this)">
+      <div><h2>3. Video Generation & Animation</h2><div class="note">Most "free" tools give one-time credits — flagged below</div></div>
+      <span class="chevron">▸</span>
+    </div>
+    <div class="section-body">
+      <div class="note-box">⚠️ Most "free" AI video tools give one-time signup credits, not a renewing free tier. Watch the badges below.</div>
+      <div class="card" data-search="pika labs text image video renews monthly">
+        <div class="card-title-row"><span class="card-title">Pika Labs</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Renews Monthly</span></div></div>
+        <div class="card-row"><b>Does:</b> Text/image-to-video</div>
+        <div class="card-row"><b>Limits:</b> 80 credits/month, no watermark</div>
+        <a class="link-btn" href="https://pika.art" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="kling ai text image video daily credits">
+        <div class="card-title-row"><span class="card-title">Kling AI</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Renews Daily</span></div></div>
+        <div class="card-row"><b>Does:</b> Text/image-to-video</div>
+        <div class="card-row"><b>Limits:</b> Free daily credits</div>
+        <a class="link-btn" href="https://klingai.com" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="magic hour text video">
+        <div class="card-title-row"><span class="card-title">Magic Hour</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge card-req">One-Time</span></div></div>
+        <div class="card-row"><b>Does:</b> Text-to-video</div>
+        <div class="card-row"><b>Limits:</b> 400 credits, no watermark, NOT renewing</div>
+        <a class="link-btn" href="https://magichour.ai" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="runway gen-4 text image video camera control">
+        <div class="card-title-row"><span class="card-title">Runway Gen-4</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge card-req">One-Time, Watermarked</span></div></div>
+        <div class="card-row"><b>Does:</b> Text/image-to-video, camera control</div>
+        <div class="card-row"><b>Limits:</b> 125 credits one-time, NOT renewing</div>
+        <a class="link-btn" href="https://runwayml.com" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="luma dream machine image-to-video">
+        <div class="card-title-row"><span class="card-title">Luma Dream Machine</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge card-req">One-Time</span></div></div>
+        <div class="card-row"><b>Does:</b> Image-to-video</div>
+        <div class="card-row"><b>Limits:</b> Limited free credits, one-time trial, NOT renewing</div>
+        <a class="link-btn" href="https://lumalabs.ai/dream-machine" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="replicate wan cogvideo ltx-video hunyuanvideo">
+        <div class="card-title-row"><span class="card-title">Replicate</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Wan, CogVideo, LTX-Video, HunyuanVideo</div>
+        <div class="card-row"><b>Limits:</b> $5 free credit covers video models, one-time</div>
+        <a class="link-btn" href="https://replicate.com" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="hugging face open-weight video models">
+        <div class="card-title-row"><span class="card-title">Hugging Face</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Open-weight text/image-to-video models</div>
+        <div class="card-row"><b>Limits:</b> Free shared Inference API, credit-metered</div>
+        <a class="link-btn" href="https://huggingface.co" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="json2video template compositing">
+        <div class="card-title-row"><span class="card-title">JSON2Video</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Does:</b> Template-based video assembly (not generative)</div>
+        <div class="card-row"><b>Limits:</b> Free tier, limited renders/month</div>
+        <a class="link-btn" href="https://json2video.com/get-api-key/" target="_blank">Get Key →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="section" id="s4">
+    <div class="section-header" onclick="toggle(this)">
+      <div><h2>4. Voice Synthesis, TTS & Speech-to-Text</h2><div class="note">ElevenLabs, Google Cloud TTS, Whisper, Bark, and more</div></div>
+      <span class="chevron">▸</span>
+    </div>
+    <div class="section-body">
+      <div class="subhead">Text-to-Speech</div>
+      <div class="card" data-search="puter.js tts text-to-speech unlimited">
+        <div class="card-title-row"><span class="card-title">Puter.js TTS</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div>
+        <div class="card-row"><b>Limits:</b> Unlimited, zero signup</div>
+        <a class="link-btn" href="https://developer.puter.com" target="_blank">Try Now →</a>
+      </div>
+      <div class="card" data-search="microsoft edge tts unofficial local">
+        <div class="card-title-row"><span class="card-title">Edge TTS (edge-tts)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div>
+        <div class="card-row"><b>Does:</b> Unofficial wrapper of Edge voices</div>
+        <div class="card-row"><b>Limits:</b> Unlimited, runs locally</div>
+        <a class="link-btn" href="https://github.com/rany2/edge-tts" target="_blank">GitHub →</a>
+      </div>
+      <div class="card" data-search="google cloud text-to-speech wavenet neural2">
+        <div class="card-title-row"><span class="card-title">Google Cloud TTS</span><div class="badges"><span class="badge no-card">No Card (Always Free)</span><span class="badge temp-no">Google Account</span></div></div>
+        <div class="card-row"><b>Does:</b> WaveNet/Neural2 voices</div>
+        <div class="card-row"><b>Limits:</b> 4,000,000 characters/month free, resets monthly</div>
+        <a class="link-btn" href="https://cloud.google.com/text-to-speech" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="amazon polly neural voices 12 months">
+        <div class="card-title-row"><span class="card-title">Amazon Polly</span><div class="badges"><span class="badge no-card">No Card (12mo Free)</span><span class="badge temp-no">AWS Account</span></div></div>
+        <div class="card-row"><b>Does:</b> Neural TTS voices</div>
+        <div class="card-row"><b>Limits:</b> 5,000,000 characters/month free for 12 months</div>
+        <a class="link-btn" href="https://aws.amazon.com/polly/" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="elevenlabs voice cloning realistic">
+        <div class="card-title-row"><span class="card-title">ElevenLabs</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Email/Google</span></div></div>
+        <div class="card-row"><b>Does:</b> Ultra-realistic voice cloning + TTS</div>
+        <div class="card-row"><b>Limits:</b> 10,000 characters/month, resets monthly</div>
+        <a class="link-btn" href="https://elevenlabs.io/app/settings/api-keys" target="_blank">Get Key →</a>
+      </div>
+
+      <div class="subhead">Speech-to-Text</div>
+      <div class="card" data-search="google cloud speech-to-text transcription">
+        <div class="card-title-row"><span class="card-title">Google Cloud Speech-to-Text</span><div class="badges"><span class="badge no-card">No Card (Always Free)</span><span class="badge temp-no">Google Account</span></div></div>
+        <div class="card-row"><b>Limits:</b> 60 minutes/month free, resets monthly</div>
+        <a class="link-btn" href="https://cloud.google.com/speech-to-text" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="deepgram fast transcription 200 credit">
+        <div class="card-title-row"><span class="card-title">Deepgram</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Limits:</b> $200 free credit, one-time</div>
+        <a class="link-btn" href="https://deepgram.com" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="assemblyai transcription speaker diarization 330 hours">
+        <div class="card-title-row"><span class="card-title">AssemblyAI</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div>
+        <div class="card-row"><b>Limits:</b> ~330 hours free transcription, one-time</div>
+        <a class="link-btn" href="https://www.assemblyai.com" target="_blank">Get Key →</a>
+      </div>
+      <div class="card" data-search="whisper via groq large-v3-turbo">
+        <div class="card-title-row"><span class="card-title">Whisper (via Groq)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-no">OAuth</span></div></div>
+        <div class="card-row"><b>Limits:</b> Part of Groq's 14,400 RPD free tier</div>
+        <a class="link-btn" href="https://console.groq.com" target="_blank">Get Key →</a>
+      </div>
+
+      <div class="subhead">Local / Self-Hosted (Unlimited, No Signup)</div>
+      <div class="card" data-search="whisper openai local self-hosted"><div class="card-title-row"><span class="card-title">Whisper (Local)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><a class="link-btn" href="https://github.com/openai/whisper" target="_blank">GitHub →</a></div>
+      <div class="card" data-search="whisperx diarization alignment"><div class="card-title-row"><span class="card-title">WhisperX</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><a class="link-btn" href="https://github.com/m-bain/whisperX" target="_blank">GitHub →</a></div>
+      <div class="card" data-search="vosk offline speech recognition"><div class="card-title-row"><span class="card-title">Vosk</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><a class="link-btn" href="https://alphacephei.com/vosk/" target="_blank">Website →</a></div>
+      <div class="card" data-search="speechbrain toolkit"><div class="card-title-row"><span class="card-title">SpeechBrain</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><a class="link-btn" href="https://speechbrain.github.io" target="_blank">Website →</a></div>
+      <div class="card" data-search="coqui tts multi-voice multilingual"><div class="card-title-row"><span class="card-title">Coqui TTS</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><a class="link-btn" href="https://github.com/coqui-ai/TTS" target="_blank">GitHub →</a></div>
+      <div class="card" data-search="piper fast low-resource tts"><div class="card-title-row"><span class="card-title">Piper</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><a class="link-btn" href="https://github.com/rhasspy/piper" target="_blank">GitHub →</a></div>
+      <div class="card" data-search="bark realistic tts sound effects"><div class="card-title-row"><span class="card-title">Bark</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><a class="link-btn" href="https://github.com/suno-ai/bark" target="_blank">GitHub →</a></div>
+      <div class="card" data-search="kokoro tts lightweight fast"><div class="card-title-row"><span class="card-title">Kokoro TTS</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><a class="link-btn" href="https://github.com/hexgrad/kokoro" target="_blank">GitHub →</a></div>
+    </div>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div class="section" id="s5">
+    <div class="section-header" onclick="toggle(this)">
+      <div><h2>5. Music & Audio Generation</h2><div class="note">Suno, Udio, AudioCraft</div></div>
+      <span class="chevron">▸</span>
+    </div>
+    <div class="section-body">
+      <div class="card" data-search="suno song generation oauth"><div class="card-title-row"><span class="card-title">Suno</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-no">OAuth</span></div></div><div class="card-row"><b>Limits:</b> 5 songs/day free, resets daily</div><a class="link-btn" href="https://suno.com" target="_blank">Try Now →</a></div>
+      <div class="card" data-search="udio ai music oauth"><div class="card-title-row"><span class="card-title">Udio</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-no">OAuth</span></div></div><div class="card-row"><b>Limits:</b> Limited free credits/month, resets monthly</div><a class="link-btn" href="https://www.udio.com" target="_blank">Try Now →</a></div>
+      <div class="card" data-search="replicate musicgen audiogen meta"><div class="card-title-row"><span class="card-title">Replicate (MusicGen/AudioGen)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> Included in $5 free credit, one-time</div><a class="link-btn" href="https://replicate.com" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="audiocraft meta self-hosted local"><div class="card-title-row"><span class="card-title">AudioCraft (Local)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><div class="card-row"><b>Limits:</b> Unlimited, needs own hardware</div><a class="link-btn" href="https://github.com/facebookresearch/audiocraft" target="_blank">GitHub →</a></div>
+      <div class="card" data-search="stable audio open local"><div class="card-title-row"><span class="card-title">Stable Audio Open (Local)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><div class="card-row"><b>Limits:</b> Unlimited, needs own hardware</div><a class="link-btn" href="https://huggingface.co/stabilityai/stable-audio-open-1.0" target="_blank">Hugging Face →</a></div>
+    </div>
+  </div>
+
+  <!-- SECTION 6 -->
+  <div class="section" id="s6">
+    <div class="section-header" onclick="toggle(this)">
+      <div><h2>6. Web Search, Scraping & Extraction</h2><div class="note">Tavily, Serper, Exa, Brave, Jina Reader, Firecrawl, Diffbot</div></div>
+      <span class="chevron">▸</span>
+    </div>
+    <div class="section-body">
+      <div class="card" data-search="duckduckgo instant answer basic search"><div class="card-title-row"><span class="card-title">DuckDuckGo Instant Answer</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><div class="card-row"><b>Limits:</b> Unlimited, zero signup</div><a class="link-btn" href="https://api.duckduckgo.com" target="_blank">Docs →</a></div>
+      <div class="card" data-search="searxng public instances metasearch"><div class="card-title-row"><span class="card-title">SearXNG (public instances)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><div class="card-row"><b>Limits:</b> Unlimited on public instances</div><a class="link-btn" href="https://searx.space" target="_blank">Instance List →</a></div>
+      <div class="card" data-search="jina reader url-to-markdown llm"><div class="card-title-row"><span class="card-title">Jina Reader</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><div class="card-row"><b>Does:</b> URL-to-clean-markdown for LLM ingestion</div><div class="card-row"><b>Use:</b> <code>r.jina.ai/{URL}</code></div><a class="link-btn" href="https://r.jina.ai" target="_blank">Try Now →</a></div>
+      <div class="card" data-search="tavily ai agent search"><div class="card-title-row"><span class="card-title">Tavily</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> 1,000 searches/month, resets monthly</div><a class="link-btn" href="https://tavily.com" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="exa ai-native semantic search"><div class="card-title-row"><span class="card-title">Exa</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> 1,000 searches/month, resets monthly</div><a class="link-btn" href="https://exa.ai" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="brave search api privacy"><div class="card-title-row"><span class="card-title">Brave Search API</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> 2,000 queries/month, resets monthly</div><a class="link-btn" href="https://brave.com/search/api/" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="serper.dev google search json"><div class="card-title-row"><span class="card-title">Serper.dev</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> 2,500 searches free, one-time</div><a class="link-btn" href="https://serper.dev" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="serpapi search engine results scraping"><div class="card-title-row"><span class="card-title">SerpApi</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> 100 searches/month, resets monthly</div><a class="link-btn" href="https://serpapi.com" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="firecrawl web scraping llm"><div class="card-title-row"><span class="card-title">Firecrawl</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> 500 free credits, one-time</div><a class="link-btn" href="https://www.firecrawl.dev" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="diffbot structured data extraction"><div class="card-title-row"><span class="card-title">Diffbot</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> 10,000 pages free trial, one-time</div><a class="link-btn" href="https://www.diffbot.com" target="_blank">Get Key →</a></div>
+    </div>
+  </div>
+
+  <!-- SECTION 7 -->
+  <div class="section" id="s7">
+    <div class="section-header" onclick="toggle(this)">
+      <div><h2>7. Code Generation & Developer Intelligence</h2><div class="note">Codeium, Codestral, Copilot, Tabby, Cursor</div></div>
+      <span class="chevron">▸</span>
+    </div>
+    <div class="section-body">
+      <div class="card" data-search="codeium windsurf autocomplete unlimited"><div class="card-title-row"><span class="card-title">Codeium / Windsurf</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> Free unlimited for individual devs</div><a class="link-btn" href="https://codeium.com" target="_blank">Get Started →</a></div>
+      <div class="card" data-search="codestral mistral fill-in-the-middle 80 languages"><div class="card-title-row"><span class="card-title">Codestral (Mistral)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> Included in Mistral Experiment tier, ~1B tokens/month</div><a class="link-btn" href="https://mistral.ai/news/codestral/" target="_blank">Learn More →</a></div>
+      <div class="card" data-search="github copilot students oss"><div class="card-title-row"><span class="card-title">GitHub Copilot</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-no">GitHub Account</span></div></div><div class="card-row"><b>Limits:</b> Free for verified students + popular OSS maintainers</div><a class="link-btn" href="https://education.github.com/pack" target="_blank">Apply →</a></div>
+      <div class="card" data-search="deepseek coder v3 code"><div class="card-title-row"><span class="card-title">DeepSeek Coder / V3</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> Dynamic free quota, 128K context</div><a class="link-btn" href="https://platform.deepseek.com" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="qwen2.5-coder modelscope huggingface"><div class="card-title-row"><span class="card-title">Qwen2.5-Coder</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Does:</b> Via ModelScope or Hugging Face</div><a class="link-btn" href="https://huggingface.co" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="continue.dev open-source coding assistant"><div class="card-title-row"><span class="card-title">Continue.dev</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><div class="card-row"><b>Does:</b> Bring your own free key from any provider above</div><a class="link-btn" href="https://continue.dev" target="_blank">Website →</a></div>
+      <div class="card" data-search="tabby local self-hosted code completion"><div class="card-title-row"><span class="card-title">Tabby (Local)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><div class="card-row"><b>Limits:</b> Unlimited, needs own hardware</div><a class="link-btn" href="https://github.com/TabbyML/tabby" target="_blank">GitHub →</a></div>
+      <div class="card" data-search="cursor ai-native code editor"><div class="card-title-row"><span class="card-title">Cursor</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> Limited fast requests/month, resets monthly</div><a class="link-btn" href="https://cursor.com" target="_blank">Get Started →</a></div>
+    </div>
+  </div>
+
+  <!-- SECTION 8 -->
+  <div class="section" id="s8">
+    <div class="section-header" onclick="toggle(this)">
+      <div><h2>8. Embeddings & Vector Search</h2><div class="note">Voyage AI, Cohere, Jina Embeddings</div></div>
+      <span class="chevron">▸</span>
+    </div>
+    <div class="section-body">
+      <div class="card" data-search="voyage ai embeddings 200 million tokens"><div class="card-title-row"><span class="card-title">Voyage AI</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> 200,000,000 tokens free (largest allowance)</div><a class="link-btn" href="https://www.voyageai.com" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="google gemini embeddings"><div class="card-title-row"><span class="card-title">Google Gemini Embeddings</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-no">Google Account</span></div></div><div class="card-row"><b>Limits:</b> Included in Gemini free tier, resets daily</div><a class="link-btn" href="https://aistudio.google.com" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="jina ai embeddings multilingual"><div class="card-title-row"><span class="card-title">Jina AI Embeddings</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> 1,000,000 tokens free (up to 10M with promo)</div><a class="link-btn" href="https://jina.ai/embeddings/" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="cohere embed v4 multilingual"><div class="card-title-row"><span class="card-title">Cohere Embed v4</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> Rate-limited free tier (20 RPM)</div><a class="link-btn" href="https://dashboard.cohere.com" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="mistral embed"><div class="card-title-row"><span class="card-title">Mistral Embed</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> Included in Mistral Experiment tier</div><a class="link-btn" href="https://console.mistral.ai" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="hugging face sentence transformers bge e5 minilm"><div class="card-title-row"><span class="card-title">Hugging Face</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Does:</b> BGE, E5, MiniLM embedding models</div><a class="link-btn" href="https://huggingface.co" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="nomic embed open-source hosted"><div class="card-title-row"><span class="card-title">Nomic Embed</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> Free API tier + fully open source</div><a class="link-btn" href="https://github.com/nomic-ai/nomic" target="_blank">GitHub →</a></div>
+      <div class="card" data-search="ollama local embedding models"><div class="card-title-row"><span class="card-title">Ollama (Local)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><div class="card-row"><b>Limits:</b> Unlimited, needs own hardware</div><a class="link-btn" href="https://ollama.ai" target="_blank">Website →</a></div>
+    </div>
+  </div>
+
+  <!-- SECTION 9 -->
+  <div class="section" id="s9">
+    <div class="section-header" onclick="toggle(this)">
+      <div><h2>9. Vision, OCR & Document Processing</h2><div class="note">Roboflow, Clarifai, Unstructured, Tesseract</div></div>
+      <span class="chevron">▸</span>
+    </div>
+    <div class="section-body">
+      <div class="card" data-search="google cloud vision ocr label face landmark"><div class="card-title-row"><span class="card-title">Google Cloud Vision</span><div class="badges"><span class="badge no-card">No Card (Always Free)</span><span class="badge temp-no">Google Account</span></div></div><div class="card-row"><b>Limits:</b> 1,000 units/month, ongoing free</div><a class="link-btn" href="https://cloud.google.com/vision" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="google gemini vision multimodal"><div class="card-title-row"><span class="card-title">Google Gemini Vision</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-no">Google Account</span></div></div><div class="card-row"><b>Limits:</b> Included in Gemini free tier, resets daily</div><a class="link-btn" href="https://aistudio.google.com" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="roboflow custom vision model training"><div class="card-title-row"><span class="card-title">Roboflow</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> 1,000 inferences/month, resets monthly</div><a class="link-btn" href="https://roboflow.com" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="clarifai image video recognition multimodal"><div class="card-title-row"><span class="card-title">Clarifai</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> 1,000 ops/month free credit; 15 req/sec rate limit for all users</div><a class="link-btn" href="https://www.clarifai.com" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="qwen-vl alibaba vision-language"><div class="card-title-row"><span class="card-title">Qwen-VL (Alibaba)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> Included in Alibaba Model Studio free tier</div><a class="link-btn" href="https://dashscope.console.aliyun.com" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="hugging face vision blip llava florence-2"><div class="card-title-row"><span class="card-title">Hugging Face (Vision)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Does:</b> BLIP, LLaVA, Florence-2, Qwen-VL</div><a class="link-btn" href="https://huggingface.co" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="deepseek-ocr siliconflow document"><div class="card-title-row"><span class="card-title">DeepSeek-OCR (via SiliconFlow)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> 30 RPM, 60K TPM</div><a class="link-btn" href="https://siliconflow.cn" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="unstructured document parsing pdf docx pptx"><div class="card-title-row"><span class="card-title">Unstructured</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> 1,000 pages/month free (capped; free-tier docs used for training)</div><a class="link-btn" href="https://unstructured.io" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="tesseract ocr local 100 languages"><div class="card-title-row"><span class="card-title">Tesseract OCR (Local)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><div class="card-row"><b>Limits:</b> Unlimited, needs own hardware</div><a class="link-btn" href="https://github.com/tesseract-ocr/tesseract" target="_blank">GitHub →</a></div>
+      <div class="card" data-search="surya local ocr layout detection"><div class="card-title-row"><span class="card-title">Surya (Local)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><div class="card-row"><b>Limits:</b> Unlimited, needs own hardware</div><a class="link-btn" href="https://github.com/VikParuchuri/surya" target="_blank">GitHub →</a></div>
+    </div>
+  </div>
+
+  <!-- SECTION 10 -->
+  <div class="section" id="s10">
+    <div class="section-header" onclick="toggle(this)">
+      <div><h2>10. Moderation & Safety</h2><div class="note">OpenAI Moderation, Perspective API, LLM Guard</div></div>
+      <span class="chevron">▸</span>
+    </div>
+    <div class="section-body">
+      <div class="card" data-search="openai moderation endpoint free unlimited"><div class="card-title-row"><span class="card-title">OpenAI Moderation endpoint</span><div class="badges"><span class="badge no-card">No Card (this endpoint only)</span><span class="badge temp-no">OpenAI Account</span></div></div><div class="card-row"><b>Limits:</b> Free and unlimited (chat completions are NOT free)</div><a class="link-btn" href="https://platform.openai.com/docs/guides/moderation" target="_blank">Docs →</a></div>
+      <div class="card" data-search="perspective api google jigsaw toxicity"><div class="card-title-row"><span class="card-title">Perspective API</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-no">Google Cloud Account</span></div></div><div class="card-row"><b>Limits:</b> Free, rate limited (1 QPS default)</div><a class="link-btn" href="https://perspectiveapi.com" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="hugging face toxicity sentiment nsfw"><div class="card-title-row"><span class="card-title">Hugging Face (Toxicity models)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> Free shared Inference API, credit-metered</div><a class="link-btn" href="https://huggingface.co" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="llm guard local security scanning"><div class="card-title-row"><span class="card-title">LLM Guard (Local)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><div class="card-row"><b>Limits:</b> Unlimited, needs own hardware</div><a class="link-btn" href="https://github.com/protectai/llm-guard" target="_blank">GitHub →</a></div>
+      <div class="card" data-search="nemo guardrails nvidia local"><div class="card-title-row"><span class="card-title">NeMo Guardrails (Local)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><div class="card-row"><b>Limits:</b> Unlimited, needs own hardware</div><a class="link-btn" href="https://github.com/NVIDIA/NeMo-Guardrails" target="_blank">GitHub →</a></div>
+    </div>
+  </div>
+
+  <!-- SECTION 11 -->
+  <div class="section" id="s11">
+    <div class="section-header" onclick="toggle(this)">
+      <div><h2>11. Translation APIs</h2><div class="note">DeepL, LibreTranslate, Lingva, MyMemory</div></div>
+      <span class="chevron">▸</span>
+    </div>
+    <div class="section-body">
+      <div class="card" data-search="lingva translate google frontend no tracking"><div class="card-title-row"><span class="card-title">Lingva Translate</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><div class="card-row"><b>Limits:</b> Unlimited, no key needed</div><a class="link-btn" href="https://lingva.ml" target="_blank">Try Now →</a></div>
+      <div class="card" data-search="libretranslate public instance open-source"><div class="card-title-row"><span class="card-title">LibreTranslate</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><div class="card-row"><b>Limits:</b> Free, rate-limited on public instance</div><a class="link-btn" href="https://libretranslate.com" target="_blank">Try Now →</a></div>
+      <div class="card" data-search="mymemory translation memory"><div class="card-title-row"><span class="card-title">MyMemory</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup (base tier)</span></div></div><div class="card-row"><b>Limits:</b> 5,000 words/day anonymous, more with email</div><a class="link-btn" href="https://mymemory.translated.net" target="_blank">Try Now →</a></div>
+      <div class="card" data-search="deepl high-quality neural translation"><div class="card-title-row"><span class="card-title">DeepL</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> 500,000 characters/month free, resets monthly</div><a class="link-btn" href="https://www.deepl.com/pro-api" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="google cloud translation neural machine"><div class="card-title-row"><span class="card-title">Google Cloud Translation</span><div class="badges"><span class="badge no-card">No Card (Always Free)</span><span class="badge temp-no">Google Account</span></div></div><div class="card-row"><b>Limits:</b> 500,000 characters/month free, ongoing</div><a class="link-btn" href="https://cloud.google.com/translate" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="nllb-200 meta huggingface 200 languages"><div class="card-title-row"><span class="card-title">NLLB-200 (Meta, via HF)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Does:</b> 200-language open-weight translation</div><a class="link-btn" href="https://huggingface.co/facebook/nllb-200-3.3B" target="_blank">Get Key →</a></div>
+    </div>
+  </div>
+
+  <!-- SECTION 12 -->
+  <div class="section" id="s12">
+    <div class="section-header" onclick="toggle(this)">
+      <div><h2>12. Serverless GPU Compute / Open Source Hosting</h2><div class="note">Colab, Kaggle, Modal, Lightning AI, HF Spaces</div></div>
+      <span class="chevron">▸</span>
+    </div>
+    <div class="section-body">
+      <div class="card" data-search="google colab free gpu jupyter"><div class="card-title-row"><span class="card-title">Google Colab</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-no">Google Account</span></div></div><div class="card-row"><b>Limits:</b> Free T4 GPU, session-limited</div><a class="link-btn" href="https://colab.research.google.com" target="_blank">Try Now →</a></div>
+      <div class="card" data-search="kaggle notebooks free gpu p100 t4"><div class="card-title-row"><span class="card-title">Kaggle Notebooks</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-no">OAuth</span></div></div><div class="card-row"><b>Limits:</b> 30 GPU hours/week free, resets weekly</div><a class="link-btn" href="https://www.kaggle.com" target="_blank">Try Now →</a></div>
+      <div class="card" data-search="hugging face spaces gradio streamlit"><div class="card-title-row"><span class="card-title">Hugging Face Spaces</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> Free CPU instances, unlimited hosting duration</div><a class="link-btn" href="https://huggingface.co/spaces" target="_blank">Try Now →</a></div>
+      <div class="card" data-search="lightning ai studios cloud gpu 22 hours"><div class="card-title-row"><span class="card-title">Lightning AI Studios</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> 22 free GPU hours, one-time</div><a class="link-btn" href="https://lightning.ai" target="_blank">Try Now →</a></div>
+      <div class="card" data-search="replicate run hosted model api"><div class="card-title-row"><span class="card-title">Replicate</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> $5 free credit, one-time</div><a class="link-btn" href="https://replicate.com" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="modal serverless gpu cpu compute 30"><div class="card-title-row"><span class="card-title">Modal</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> $30/month free compute credits, resets monthly</div><a class="link-btn" href="https://modal.com" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="ollama cloud hosted inference"><div class="card-title-row"><span class="card-title">Ollama Cloud</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> Session/weekly limits, resets weekly</div><a class="link-btn" href="https://ollama.com/cloud" target="_blank">Get Key →</a></div>
+    </div>
+  </div>
+
+  <!-- SECTION 13 -->
+  <div class="section" id="s13">
+    <div class="section-header" onclick="toggle(this)">
+      <div><h2>13. Community Proxies & Multi-Model Aggregators</h2><div class="note">OpenRouter, Puter.js, Zukijourney, ElectronHub — use with caution for prod</div></div>
+      <span class="chevron">▸</span>
+    </div>
+    <div class="section-body">
+      <div class="note-box">⚠️ Community reverse-proxy services pool access to premium closed models (GPT-4/Claude/Gemini) for free. Great for learning/experiments — NOT recommended for production or anything sensitive, as uptime/terms vary and they aren't run by the actual model providers.</div>
+      <div class="card" data-search="openrouter unified api 100 models 20 free"><div class="card-title-row"><span class="card-title">OpenRouter</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Limits:</b> 20+ ":free" tagged models at $0</div><a class="link-btn" href="https://openrouter.ai" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="puter.js gpt-4o claude gemini dall-e tts wrapper"><div class="card-title-row"><span class="card-title">Puter.js</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><div class="card-row"><b>Does:</b> Free unlimited GPT-4o, Claude, Gemini, DALL-E, TTS</div><a class="link-btn" href="https://developer.puter.com" target="_blank">Try Now →</a></div>
+      <div class="card" data-search="zukijourney community api gpt-4.1 claude gemini deepseek"><div class="card-title-row"><span class="card-title">zukijourney</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Discord/Email</span></div></div><div class="card-row"><b>Does:</b> GPT-4.1, Claude-3.5, Gemini-2.5, DeepSeek-R1, GPT-Image-1</div><a class="link-btn" href="https://github.com/zukijourney" target="_blank">GitHub →</a></div>
+      <div class="card" data-search="electronhub gpt-4.1 claude gemini flux tts stt embeddings"><div class="card-title-row"><span class="card-title">ElectronHub</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Discord/Email</span></div></div><div class="card-row"><b>Does:</b> GPT-4.1, Claude-3.5, Gemini-2.5, Flux-Kontext, TTS/STT/Embeddings</div><a class="link-btn" href="https://github.com/zukixa/cool-ai-stuff" target="_blank">Listing →</a></div>
+      <div class="card" data-search="mnn gpt-4.1 gemini deepseek gpt-image flux"><div class="card-title-row"><span class="card-title">MNN</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Discord/Email</span></div></div><div class="card-row"><b>Does:</b> GPT-4.1, Gemini-2.5, Deepseek-R1, GPT-Image-1, Flux-Kontext</div><a class="link-btn" href="https://github.com/zukixa/cool-ai-stuff" target="_blank">Listing →</a></div>
+      <div class="card" data-search="navyapi gemini deepseek flux tts embeddings"><div class="card-title-row"><span class="card-title">NavyAPI</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Discord/Email</span></div></div><div class="card-row"><b>Does:</b> Gemini-2.5, Deepseek-R1, Flux-Kontext, TTS/Embeddings</div><a class="link-btn" href="https://github.com/zukixa/cool-ai-stuff" target="_blank">Listing →</a></div>
+      <div class="card" data-search="ai/ml api 200 models unified"><div class="card-title-row"><span class="card-title">AI/ML API</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Does:</b> 200+ models unified under one key</div><a class="link-btn" href="https://aimlapi.com" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="eden ai unified routing providers"><div class="card-title-row"><span class="card-title">Eden AI</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">Temp-Mail OK</span></div></div><div class="card-row"><b>Does:</b> Unified API routing across many AI providers</div><a class="link-btn" href="https://www.edenai.co" target="_blank">Get Key →</a></div>
+      <div class="card" data-search="litellm local self-hosted proxy router"><div class="card-title-row"><span class="card-title">LiteLLM (Local)</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><div class="card-row"><b>Does:</b> Self-hosted proxy/router for all providers</div><a class="link-btn" href="https://github.com/BerriAI/litellm" target="_blank">GitHub →</a></div>
+      <div class="card" data-search="freellm.net playground test providers"><div class="card-title-row"><span class="card-title">freellm.net Playground</span><div class="badges"><span class="badge no-card">No Card</span><span class="badge temp-yes">No Signup</span></div></div><div class="card-row"><b>Does:</b> Test any of the 30 free LLM providers in-browser</div><a class="link-btn" href="https://freellm.net/playground/" target="_blank">Try Now →</a></div>
+      <div class="card" data-search="live tier status dashboard compare community proxies"><div class="card-title-row"><span class="card-title">Live Status Dashboard</span></div><div class="card-row"><b>Does:</b> Compare all community proxies side by side</div><a class="link-btn" href="https://cas.zukijourney.com/" target="_blank">View Dashboard →</a></div>
+    </div>
+  </div>
+
+  <!-- SECTION 14 -->
+  <div class="section" id="s14">
+    <div class="section-header" onclick="toggle(this)">
+      <div><h2>14. Temp-Mail Compatibility — Master Filter</h2><div class="note">Which services actually work with throwaway email</div></div>
+      <span class="chevron">▸</span>
+    </div>
+    <div class="section-body">
+
+      <div class="subhead">✅ No Signup Required At All</div>
+      <div class="card" data-search="no signup puter llm7 gemini groq github cloudflare mistral cohere kilo z ai pollinations craiyon duckduckgo searxng jina lingva libretranslate edge-tts ollama lm studio local">
+        <div class="card-row">Puter.js · LLM7.io · Pollinations AI · Craiyon · DuckDuckGo Instant Answer · SearXNG (public) · Jina Reader · Lingva Translate · LibreTranslate (public) · edge-tts · Ollama / LM Studio / any local tool</div>
+        <div class="card-row" style="margin-top:8px; color:var(--muted)"><i>Google Gemini, Groq, GitHub Models, Cloudflare, Mistral, Cohere, Kilo Code, and Z AI show as "no auth" on freellm.net's dataset, but in practice most require at least a Google/GitHub OAuth login or email — verify at signup time.</i></div>
+      </div>
+
+      <div class="subhead">✅ Works With Temp/Throwaway Email</div>
+      <div class="card" data-search="hugging face openrouter modelscope ovhcloud ollama cloud opencode aion agnes alibaba sambanova siliconflow xai chutes glhf ai21 deepseek nscale nebius prodia segmind fireworks deepinfra novita together replicate ideogram magic hour leonardo stability clipdrop pika kling json2video elevenlabs deepgram assemblyai tavily exa brave serper serpapi firecrawl diffbot codeium cursor voyage jina embeddings nomic roboflow clarifai unstructured deepl mymemory modal lightning zukijourney electronhub mnn navyapi aimlapi edenai">
+        <div class="card-row"><b>LLM:</b> Hugging Face, OpenRouter, Mistral AI, Cohere, ModelScope, OVHcloud, Ollama Cloud, OpenCode Zen, Aion Labs, Agnes AI, Alibaba Model Studio, SambaNova, SiliconFlow, xAI, Chutes.ai, Glhf.chat, AI21 Labs, DeepSeek, Nscale, Nebius</div>
+        <div class="card-row"><b>Image/Video:</b> Prodia, Segmind, Fireworks AI, DeepInfra, Novita AI, Together AI, Replicate, Ideogram, Magic Hour, Leonardo AI, Stability AI, Clipdrop, Pika Labs, Kling AI, JSON2Video</div>
+        <div class="card-row"><b>Audio:</b> ElevenLabs, Deepgram, AssemblyAI</div>
+        <div class="card-row"><b>Search:</b> Tavily, Exa, Brave Search, Serper.dev, SerpApi, Firecrawl, Diffbot</div>
+        <div class="card-row"><b>Code:</b> Codeium, Cursor</div>
+        <div class="card-row"><b>Embeddings:</b> Voyage AI, Jina AI Embeddings, Nomic Embed</div>
+        <div class="card-row"><b>Vision/Doc:</b> Roboflow, Clarifai, Unstructured</div>
+        <div class="card-row"><b>Translation:</b> DeepL, MyMemory</div>
+        <div class="card-row"><b>GPU:</b> Modal, Lightning AI</div>
+        <div class="card-row"><b>Aggregators:</b> zukijourney, ElectronHub, MNN, NavyAPI, AI/ML API, Eden AI</div>
+      </div>
+
+      <div class="subhead">❌ Needs Real Identity — Temp Email Will NOT Work</div>
+      <div class="card misconception-card" data-search="nvidia phone github colab kaggle suno udio google cloud aws polly openai perspective">
+        <div class="card-row"><b>NVIDIA NIM:</b> Phone verification mandatory</div>
+        <div class="card-row"><b>GitHub Copilot / GitHub Models:</b> Real GitHub account required</div>
+        <div class="card-row"><b>Google Colab / Kaggle:</b> Google/email OAuth tied to real identity</div>
+        <div class="card-row"><b>Suno / Udio:</b> OAuth login required</div>
+        <div class="card-row"><b>Google Cloud (Vision/Speech/Translate/TTS):</b> Google account + Cloud project</div>
+        <div class="card-row"><b>AWS (Polly):</b> Real AWS account</div>
+        <div class="card-row"><b>OpenAI Moderation:</b> OpenAI account</div>
+        <div class="card-row"><b>Perspective API:</b> Google Cloud account</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 15 -->
+  <div class="section" id="s15">
+    <div class="section-header" onclick="toggle(this)">
+      <div><h2>15. Common Misconceptions — These Are PAID ONLY</h2><div class="note">GPT-4o, Claude, Perplexity, Midjourney do NOT have real free tiers</div></div>
+      <span class="chevron">▸</span>
+    </div>
+    <div class="section-body">
+      <div class="card misconception-card" data-search="openai gpt-4o gpt-5 no free tier">
+        <div class="card-title-row"><span class="card-title">OpenAI GPT-4o / GPT-5 API</span></div>
+        <div class="card-row">❌ NO free tier. Requires a valid billing method before any key works. Small unpublished trial credits expire, then payment is mandatory.</div>
+        <div class="card-row workaround">✅ Workaround: Use Puter.js or community proxies (Section 13) for free GPT-4o access</div>
+      </div>
+      <div class="card misconception-card" data-search="anthropic claude opus sonnet haiku no free tier">
+        <div class="card-title-row"><span class="card-title">Anthropic Claude API</span></div>
+        <div class="card-row">❌ NO free tier. Small unpublished trial credit on signup only; ongoing use requires payment. No renewing free quota exists.</div>
+        <div class="card-row workaround">✅ Workaround: Use Puter.js or community proxies (Section 13) for free Claude access</div>
+      </div>
+      <div class="card misconception-card" data-search="perplexity api no free tier pay-as-you-go">
+        <div class="card-title-row"><span class="card-title">Perplexity API</span></div>
+        <div class="card-row">❌ NO free tier. Pay-as-you-go only for the Agent API; no subscription-free option for developers.</div>
+        <div class="card-row workaround">✅ Workaround: Use Puter.js, which proxies free unlimited Perplexity-style search with zero key</div>
+      </div>
+      <div class="card misconception-card" data-search="midjourney no api free discord subscription">
+        <div class="card-title-row"><span class="card-title">Midjourney</span></div>
+        <div class="card-row">❌ No public API at all on the free tier. Discord/web interface only; any usage requires an active paid subscription.</div>
+        <div class="card-row workaround">✅ Workaround: Use Pollinations AI, Stability AI, or Flux via Replicate instead</div>
+      </div>
+      <div class="card misconception-card" data-search="runway gen-4 one-time credits watermark not renewing">
+        <div class="card-title-row"><span class="card-title">Runway Gen-4 (API access)</span></div>
+        <div class="card-row">❌ Free credits (125) are one-time only, not renewing. Free plan output is watermarked.</div>
+        <div class="card-row workaround">✅ Workaround: Use Pika Labs (renews monthly) or self-hosted LTX-Video/HunyuanVideo instead</div>
+      </div>
+      <div class="card misconception-card" data-search="google veo sora 2 no public free api closed access">
+        <div class="card-title-row"><span class="card-title">Google Veo / Sora 2</span></div>
+        <div class="card-row">❌ No public free-tier API access as of this writing; closed/limited access programs only.</div>
+        <div class="card-row workaround">✅ Workaround: Use open-weight video models (Wan, LTX-Video, CogVideoX) self-hosted instead</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICK START -->
+  <div class="section open" id="quickstart">
+    <div class="section-header" onclick="toggle(this)">
+      <div><h2>⚡ Quick Start — Best Keys to Get Right Now (15 min)</h2></div>
+      <span class="chevron">▸</span>
+    </div>
+    <div class="section-body">
+      <ul class="quickstart-list">
+        <li><b>1. Google Gemini</b> — best all-around: text, vision, embeddings, 1,500 req/day → <code>aistudio.google.com/apikey</code></li>
+        <li><b>2. Groq</b> — fastest inference, 14,400 req/day → <code>console.groq.com/keys</code></li>
+        <li><b>3. OpenRouter</b> — 20+ free models under one key → <code>openrouter.ai/keys</code></li>
+        <li><b>4. Hugging Face</b> — text, image, audio, vision, everything → <code>huggingface.co/settings/tokens</code></li>
+        <li><b>5. LLM7.io</b> — zero-auth text/image/audio/video/pdf, no signup at all → <code>llm7.io</code></li>
+        <li><b>6. Puter.js</b> — free GPT-4o/Claude/Gemini/DALL-E/TTS, zero key needed → <code>developer.puter.com</code></li>
+        <li><b>7. ElevenLabs</b> — best free TTS voices → <code>elevenlabs.io</code></li>
+        <li><b>8. Tavily</b> — AI-native web search for RAG/agents → <code>tavily.com</code></li>
+      </ul>
+      <div class="note-box">
+        🔗 <b>No-key instant bookmarks:</b><br>
+        Images: <code>image.pollinations.ai/prompt/a+cyberpunk+city+at+night</code><br>
+        Chat/Vision/TTS: Puter.js SDK in any HTML page<br>
+        Translate: Lingva or LibreTranslate public instance<br>
+        URL-to-text for LLMs: <code>r.jina.ai/{any-url}</code>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p><b>Important notes:</b> Free tiers change often — freellm.net refreshes daily and is the most reliable source for Section 1.
+  Google Cloud/AWS need a project/account but not billing for "Always Free" products — watch for "enable billing" prompts.
+  Community proxies (Section 13) are unofficial — fine for learning, avoid for production.
+  Self-hosting = zero limits, zero dependency, only needs your own hardware.
+  Stacking Gemini + Groq + Cloudflare + OpenRouter + LLM7.io yields 25,000+ free requests/day combined.</p>
+  <p>Sources: <a href="https://freellm.net" target="_blank">freellm.net</a> ·
+  <a href="https://github.com/open-free-llm-api/awesome-freellm-apis" target="_blank">awesome-freellm-apis</a> ·
+  <a href="https://github.com/OuterSpacee/free-ai-apis" target="_blank">OuterSpacee/free-ai-apis</a> ·
+  <a href="https://github.com/zukixa/cool-ai-stuff" target="_blank">zukixa/cool-ai-stuff</a> ·
+  <a href="https://cas.zukijourney.com/" target="_blank">Community Dashboard</a></p>
+</footer>
+
+<script>
+  function toggle(header) {
+    header.parentElement.classList.toggle('open');
+  }
+  // Open first section by default for convenience
+  document.getElementById('s1').classList.add('open');
+
+  const searchInput = document.getElementById('search');
+  searchInput.addEventListener('input', function() {
+    const q = this.value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.card');
+    const sections = document.querySelectorAll('.section');
+
+    if (q === '') {
+      cards.forEach(c => c.classList.remove('hidden'));
+      sections.forEach(s => s.classList.remove('open'));
+      document.getElementById('s1').classList.add('open');
+      return;
+    }
+
+    sections.forEach(section => {
+      let anyVisible = false;
+      section.querySelectorAll('.card').forEach(card => {
+        const haystack = (card.dataset.search || '') + ' ' + card.innerText.toLowerCase();
+        if (haystack.toLowerCase().includes(q)) {
+          card.classList.remove('hidden');
+          anyVisible = true;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+      if (anyVisible) {
+        section.classList.add('open');
+        section.style.display = '';
+      } else {
+        section.style.display = 'none';
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
