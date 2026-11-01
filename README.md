@@ -1,15 +1,37 @@
 # API Keys Demo
 
-A small static HTML demonstration project for API-driven browser interfaces.
+A small static HTML demonstration project for working with API-driven browser interfaces. Do not place real credentials in this repository.
+
+## Overview
+
+This repository is a project prototype maintained by [Majenayu](https://github.com/Majenayu). The implementation is intentionally documented from the files currently present in the repository; unfinished or experimental behavior should be treated as prototype behavior.
+
+## Technology
+
+HTML, CSS, JavaScript
 
 ## Run locally
 
-Open `index.html` in a browser or serve the directory with any static web server.
+```bash
+Open `index.html` in a browser.
+```
 
-## Security
+## Repository layout
 
-Do not place real API keys, tokens, passwords, or private credentials in this repository. Use environment variables and a server-side integration for real applications.
+The main entrypoint and supporting pages/services are kept at the repository root. Consult the source files and package manifests for the current implementation details.
+
+## Configuration
+
+Keep credentials and environment-specific values in local environment variables. Never commit API keys, tokens, private keys, or production database credentials.
 
 ## Status
 
-Small learning/demo project.
+Prototype / learning project. Setup and feature coverage may evolve as the project is developed.
+
+## License
+
+No license is declared in this repository. All rights remain with the copyright holder unless a license is added.
+
+## Author
+
+P G Ayush Rai — [GitHub](https://github.com/Majenayu)
